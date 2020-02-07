@@ -1,0 +1,18 @@
+[Unit]
+Description=Gunicorn instance to serve Tunes2u app
+After=network.target
+
+[Service]
+PermissionsStartOnly = true  
+PIDFile = /run/tunes/tunes.pid
+WorkingDirectory=/var/www/html/tunes2u.com/
+Environment="GOOGLE_APPLICATION_CREDENTIALS=/home/df/apikeys.json"
+ExecStartPre = /bin/mkdir /run/tunes
+ExecStart=/usr/bin/env gunicorn --bind 0.0.0.0:5000 wsgi:app --pid /run/tunes/tunes.pid
+ExecReload = /bin/kill -s HUP $MAINPID  
+ExecStop = /bin/kill -s TERM $MAINPID  
+ExecStopPost = /bin/rm -rf /run/tunes
+PrivateTmp = true
+
+[Install]
+WantedBy=multi-user.target
